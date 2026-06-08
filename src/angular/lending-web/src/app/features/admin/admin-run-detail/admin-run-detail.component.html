@@ -1,0 +1,177 @@
+<p>
+  <a routerLink="/admin/portfolio">← Назад до портфеля</a>
+</p>
+@if (error()) {
+  <p class="banner-err" role="alert">{{ error() }}</p>
+}
+@if (loading()) {
+  <p>Завантаження…</p>
+} @else if (run()) {
+  @let r = run()!;
+  <div class="card">
+    <h1>Запуск оптимізації портфеля</h1>
+    <p class="mono id">Номер запуску: {{ runId(r.portfolioRunId) }}</p>
+    <dl class="grid">
+      <div>
+        <dt>Дата</dt>
+        <dd>{{ r.businessDate }}</dd>
+      </div>
+      <div>
+        <dt>Статус</dt>
+        <dd>
+          <span
+            class="st"
+            [class.pending]="r.status === 'Pending'"
+            [class.ok]="r.status === 'Succeeded'"
+            [class.fail]="r.status === 'Failed'"
+            >{{ runStatusLabel(r.status) }}</span
+          >
+        </dd>
+      </div>
+      <div>
+        <dt>Бюджет (знімок)</dt>
+        <dd>{{ r.budgetCapSnapshot | number: '1.2-2' }}</dd>
+      </div>
+      <div>
+        <dt>Значення цільової функції</dt>
+        <dd>
+          @if (r.objectiveValue != null) {
+            {{ r.objectiveValue | number: '1.2-2' }}
+          } @else {
+            —
+          }
+        </dd>
+      </div>
+      <div>
+        <dt>Використано</dt>
+        <dd>
+          @if (r.usedBudget != null) {
+            {{ r.usedBudget | number: '1.2-2' }}
+          } @else {
+            —
+          }
+        </dd>
+      </div>
+      <div>
+        <dt>Очікуваний прибуток</dt>
+        <dd>
+          @if (r.expectedPortfolioProfit != null) {
+            {{ r.expectedPortfolioProfit | number: '1.2-2' }}
+          } @else {
+            —
+          }
+        </dd>
+      </div>
+    </dl>
+
+    <h2>Відібрані заявки та рішення</h2>
+    @if (r.status === 'Succeeded') {
+      <p class="explain">
+        <strong>Генетичний алгоритм</strong> може рекомендувати суму <em>меншу за запитану</em>, щоб укластися в бюджет і охопити більше клієнтів. Колонка «Рекомендовано» — це запропонована до видачі сума; у полі «Видача» можна змінити її перед схваленням (у межах продукту та запиту).
+      </p>
+    }
+    @if (actionMessage()) {
+      <p class="banner-info" role="status">{{ actionMessage() }}</p>
+    }
+    @if (r.selections.length === 0) {
+      <p class="muted">
+        @if (r.status === 'Pending') {
+          Очікуйте: оптимізація виконується.
+        } @else {
+          Немає рядків.
+        }
+      </p>
+    } @else {
+      <div class="table-wrap" role="region" tabindex="0" aria-label="Відбір">
+        <table class="wide">
+          <thead>
+            <tr>
+              <th>Заявка</th>
+              <th>Статус</th>
+              <th>Запитано</th>
+              <th>Мін. продукту</th>
+              <th>Рекомендовано (ГА)</th>
+              <th>Прибуток (оцінка)</th>
+              <th>Видача</th>
+              <th>Дії</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of r.selections; track s.applicationId) {
+              <tr [class.dimmed]="!canDecide(s)">
+                <td class="mono sm">
+                  <a [routerLink]="['/applications', s.applicationId]">{{
+                    applicationId(s.applicationId)
+                  }}</a>
+                </td>
+                <td>{{ s.applicationStatus ?? '—' }}</td>
+                <td>
+                  @if (s.requestedPrincipal != null) {
+                    {{ s.requestedPrincipal | number: '1.2-2' }}
+                  } @else {
+                    —
+                  }
+                </td>
+                <td>
+                  @if (s.productMinPrincipal != null) {
+                    {{ s.productMinPrincipal | number: '1.2-2' }}
+                  } @else {
+                    —
+                  }
+                </td>
+                <td>{{ s.recommendedPrincipal | number: '1.2-2' }}</td>
+                <td>{{ s.expectedProfitSnapshot | number: '1.2-2' }}</td>
+                <td>
+                  @if (canDecide(s)) {
+                    <input
+                      type="number"
+                      class="inp-amt"
+                      step="0.01"
+                      [value]="draftAmount(s)"
+                      (input)="
+                        onIssueAmountInput(
+                          s.applicationId,
+                          $any($event.target).value,
+                          s.recommendedPrincipal
+                        )
+                      "
+                    />
+                  } @else if (s.approvedPrincipal != null) {
+                    {{ s.approvedPrincipal | number: '1.2-2' }}
+                  } @else {
+                    —
+                  }
+                </td>
+                <td class="actions">
+                  @if (canDecide(s)) {
+                    <button
+                      type="button"
+                      class="btn ok"
+                      [disabled]="actionBusyId() === s.applicationId"
+                      (click)="approve(s)"
+                    >
+                      Схвалити
+                    </button>
+                    <button
+                      type="button"
+                      class="btn bad"
+                      [disabled]="actionBusyId() === s.applicationId"
+                      (click)="reject(s)"
+                    >
+                      Відхилити
+                    </button>
+                  } @else {
+                    <span class="muted sm">Рішення вже прийнято</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+  @if (r.status === 'Pending') {
+    <p class="hint">Сторінка оновлюється автоматично, поки оптимізація виконується…</p>
+  }
+}

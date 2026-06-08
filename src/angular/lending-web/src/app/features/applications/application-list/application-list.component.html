@@ -1,0 +1,64 @@
+<div class="head">
+  <h1>Заявки</h1>
+  @if (!auth.isAdmin()) {
+    <a class="btn" routerLink="/applications/new">Нова заявка</a>
+  }
+</div>
+@if (error()) {
+  <p class="banner-err" role="alert">{{ error() }}</p>
+}
+@if (loading()) {
+  <p>Завантаження…</p>
+} @else if (items() !== null) {
+  @if (items()!.length === 0) {
+    <p>
+      Заявок ще немає.
+      @if (!auth.isAdmin()) {
+        <a routerLink="/applications/new">Подайте заявку</a>.
+      }
+    </p>
+  } @else {
+    <div class="table-wrap" role="region" aria-label="Список заявок" tabindex="0">
+      <table>
+        <thead>
+          <tr>
+            <th>Заявка</th>
+            <th>Дата</th>
+            <th>Запитано</th>
+            @if (auth.isAdmin()) {
+              <th>Схвалено</th>
+            }
+            <th>Термін (дн.)</th>
+            <th>Статус</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of items()!; track a.applicationId) {
+            <tr>
+              <td class="mono">{{ appId(a.applicationId) }}</td>
+              <td>{{ a.createdAtUtc | date: 'medium' }}</td>
+              <td>{{ a.requestedPrincipal | number: '1.2-2' }}</td>
+              @if (auth.isAdmin()) {
+                <td>
+                  @if (a.approvedPrincipal != null) {
+                    {{ a.approvedPrincipal | number: '1.2-2' }}
+                  } @else if (a.status === 'ManualApproved') {
+                    {{ a.requestedPrincipal | number: '1.2-2' }}
+                  } @else {
+                    —
+                  }
+                </td>
+              }
+              <td>{{ a.requestedTermDays }}</td>
+              <td><span class="status">{{ statusLabel(a.status) }}</span></td>
+              <td>
+                <a [routerLink]="['/applications', a.applicationId]">Деталі</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+}

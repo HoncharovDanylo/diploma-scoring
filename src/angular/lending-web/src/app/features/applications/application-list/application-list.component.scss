@@ -1,0 +1,77 @@
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+h1 {
+  font-size: 1.35rem;
+  margin: 0;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.45rem 0.9rem;
+  background: var(--primary);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 0.4rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.btn:hover {
+  filter: brightness(1.05);
+}
+
+.banner-err {
+  padding: 0.5rem 0.75rem;
+  background: var(--danger-bg);
+  color: var(--danger);
+  border-radius: 0.35rem;
+  margin: 0 0 1rem;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--card-bg);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th,
+td {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.status {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+a {
+  color: var(--primary);
+}

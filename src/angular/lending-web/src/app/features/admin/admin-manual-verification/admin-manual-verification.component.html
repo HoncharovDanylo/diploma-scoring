@@ -1,0 +1,71 @@
+<div class="head">
+  <h1>Ручна верифікація</h1>
+  <button type="button" class="btn" (click)="reload()">Оновити список</button>
+</div>
+<p class="hint-top">
+  Заявки, що очікують рішення після скорингу. Рекомендовані суми від оптимізації портфеля
+  зручніше переглядати на сторінці
+  <a routerLink="/admin/portfolio">портфеля</a> (деталі запуску).
+</p>
+
+@if (error()) {
+  <p class="banner-err">{{ error() }}</p>
+}
+@if (loading()) {
+  <p>Завантаження…</p>
+} @else if (items().length === 0) {
+  <p>Немає заявок, що очікують рішення адміністратора.</p>
+} @else {
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Заявка</th>
+          <th>Дата</th>
+          <th>Сума</th>
+          <th>Термін (дн.)</th>
+          <th>Ймовірність дефолту</th>
+          <th>Версія моделі</th>
+          <th>Сума видачі</th>
+          <th>Дія</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of items(); track r.applicationId) {
+          <tr>
+            <td class="mono">{{ appId(r.applicationId) }}</td>
+            <td>{{ r.createdAtUtc | date: 'short' }}</td>
+            <td>{{ r.requestedPrincipal | number: '1.0-2' }}</td>
+            <td>{{ r.requestedTermDays }}</td>
+            <td>{{ r.scoring?.probabilityOfDefault ?? 0 | number: '1.2-4' }}</td>
+            <td>
+              @if (r.scoring?.modelVersion) {
+                {{ r.scoring?.modelVersion }}
+              } @else {
+                —
+              }
+            </td>
+            <td>
+              <input
+                type="number"
+                class="inp-num"
+                step="0.01"
+                min="{{ r.productMinPrincipal }}"
+                max="{{ r.requestedPrincipal }}"
+                [attr.aria-label]="'Сума видачі для ' + appId(r.applicationId)"
+                (input)="onApproveAmountInput(r.applicationId, $any($event.target).value)"
+              />
+              <span class="hint sm"
+                >{{ r.productMinPrincipal | number: '1.0-2' }}–{{ r.requestedPrincipal | number: '1.0-2' }}</span
+              >
+            </td>
+            <td class="row">
+              <button type="button" class="btn ok" (click)="decide(r, 'Approve')">Схвалити</button>
+              <button type="button" class="btn bad" (click)="decide(r, 'Reject')">Відхилити</button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

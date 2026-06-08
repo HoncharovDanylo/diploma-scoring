@@ -1,0 +1,169 @@
+a {
+  color: var(--primary);
+}
+
+.banner-err {
+  padding: 0.5rem 0.75rem;
+  background: var(--danger-bg);
+  color: var(--danger);
+  border-radius: 0.35rem;
+  margin: 0 0 0.75rem;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 1.25rem 1.5rem;
+}
+
+h1 {
+  font-size: 1.2rem;
+  margin: 0 0 0.35rem;
+}
+
+.id {
+  margin: 0 0 1.25rem;
+  font-size: 0.85rem;
+  word-break: break-all;
+}
+
+h2 {
+  font-size: 1rem;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 0.5rem 1.25rem;
+  margin: 0;
+}
+.grid dt {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin: 0;
+}
+.grid dd {
+  margin: 0.1rem 0 0;
+}
+
+.st.pending {
+  color: var(--warn);
+  font-weight: 600;
+}
+.st.ok {
+  color: var(--ok);
+  font-weight: 600;
+}
+.st.fail {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.hint {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin: 0.5rem 0 0;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  margin-top: 0.35rem;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+th,
+td {
+  padding: 0.5rem 0.65rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  background: var(--page-bg);
+}
+tr:last-child td {
+  border-bottom: none;
+}
+.sm {
+  font-size: 0.8rem;
+}
+
+.explain {
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+  margin: 0 0 0.75rem;
+  max-width: 52rem;
+}
+
+.banner-info {
+  padding: 0.5rem 0.75rem;
+  background: rgba(20, 90, 120, 0.12);
+  color: var(--text);
+  border-radius: 0.35rem;
+  margin: 0 0 0.75rem;
+}
+
+.wide {
+  min-width: 58rem;
+}
+
+.dimmed td:not(.actions) {
+  opacity: 0.75;
+}
+
+.inp-amt {
+  width: 6.5rem;
+  max-width: 100%;
+  padding: 0.25rem 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+}
+
+.actions {
+  white-space: nowrap;
+}
+
+.actions .btn {
+  display: inline-block;
+  margin: 0 0.2rem 0.2rem 0;
+  border: none;
+  border-radius: 0.3rem;
+  padding: 0.3rem 0.45rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.actions .btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.actions .ok {
+  background: #147a2e;
+  color: #fff;
+}
+.actions .warn {
+  background: #866400;
+  color: #fff;
+}
+.actions .bad {
+  background: #8b1f1f;
+  color: #fff;
+}

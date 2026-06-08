@@ -1,0 +1,113 @@
+{
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:5000"
+  },
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/health",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5001 }],
+      "UpstreamPathTemplate": "/health",
+      "UpstreamHttpMethod": [ "Get" ],
+      "Priority": 1
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/auth/register",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5001 }],
+      "UpstreamPathTemplate": "/api/v1/auth/register",
+      "UpstreamHttpMethod": [ "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/auth/login",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5001 }],
+      "UpstreamPathTemplate": "/api/v1/auth/login",
+      "UpstreamHttpMethod": [ "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/auth/me",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5001 }],
+      "UpstreamPathTemplate": "/api/v1/auth/me",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/applications",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5002 }],
+      "UpstreamPathTemplate": "/api/v1/applications",
+      "UpstreamHttpMethod": [ "Get", "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/applications/config",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5002 }],
+      "UpstreamPathTemplate": "/api/v1/applications/config",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/applications/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5002 }],
+      "UpstreamPathTemplate": "/api/v1/applications/{id}",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/manual-verification/pending",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5002 }],
+      "UpstreamPathTemplate": "/api/v1/manual-verification/pending",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/manual-verification/{id}/decision",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5002 }],
+      "UpstreamPathTemplate": "/api/v1/manual-verification/{id}/decision",
+      "UpstreamHttpMethod": [ "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/loan-products",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5002 }],
+      "UpstreamPathTemplate": "/api/v1/loan-products",
+      "UpstreamHttpMethod": [ "Get", "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/loan-products/{id}/activate",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5002 }],
+      "UpstreamPathTemplate": "/api/v1/loan-products/{id}/activate",
+      "UpstreamHttpMethod": [ "Put" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/portfolio/daily-budget",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5003 }],
+      "UpstreamPathTemplate": "/api/v1/portfolio/daily-budget",
+      "UpstreamHttpMethod": [ "Put" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/portfolio/summary/{businessDate}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5003 }],
+      "UpstreamPathTemplate": "/api/v1/portfolio/summary/{businessDate}",
+      "UpstreamHttpMethod": [ "Get" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/portfolio/runs",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5003 }],
+      "UpstreamPathTemplate": "/api/v1/portfolio/runs",
+      "UpstreamHttpMethod": [ "Post" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/portfolio/runs/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5003 }],
+      "UpstreamPathTemplate": "/api/v1/portfolio/runs/{id}",
+      "UpstreamHttpMethod": [ "Get" ]
+    }
+  ]
+}

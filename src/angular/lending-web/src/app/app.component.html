@@ -1,0 +1,31 @@
+<div class="shell">
+  <header class="top">
+    <a class="brand" routerLink="/">Lending DSS</a>
+    <nav class="nav" aria-label="Main">
+      @if (auth.isLoggedIn()) {
+        <a routerLink="/account/profile" routerLinkActive="active">Дані акаунта</a>
+        <a routerLink="/applications" routerLinkActive="active">Мої заявки</a>
+        @if (!auth.isAdmin()) {
+          <a routerLink="/applications/new" routerLinkActive="active">Нова заявка</a>
+        }
+        @if (auth.isAdmin()) {
+          <a routerLink="/admin/manual-verification" routerLinkActive="active">Верифікація</a>
+          <a routerLink="/admin/portfolio" routerLinkActive="active">Портфель і бюджет</a>
+        }
+        <button type="button" class="linkish" (click)="auth.logout()">Вийти</button>
+      } @else {
+        <a routerLink="/auth/login" routerLinkActive="active">Увійти</a>
+        <a routerLink="/auth/register" routerLinkActive="active">Реєстрація</a>
+      }
+    </nav>
+  </header>
+  <main class="main">
+    @if (notifications.error(); as error) {
+      <div class="global-error" role="alert" aria-live="assertive">
+        <span>{{ error }}</span>
+        <button type="button" class="close-btn" (click)="notifications.dismissError()">x</button>
+      </div>
+    }
+    <router-outlet />
+  </main>
+</div>

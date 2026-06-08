@@ -1,0 +1,143 @@
+<div class="head">
+  <h1>Портфель і бюджет</h1>
+  <a routerLink="/admin/manual-verification">До верифікації</a>
+</div>
+
+@if (error()) {
+  <p class="banner-err" role="alert">{{ error() }}</p>
+}
+@if (success()) {
+  <p class="banner-ok" role="status">{{ success() }}</p>
+}
+
+<div class="card">
+  <form [formGroup]="form">
+    <label>
+      <span>Бізнес-день</span>
+      <input type="date" formControlName="businessDate" />
+    </label>
+    <div class="actions">
+      <button type="button" class="btn secondary" [disabled]="loadingSummary()" (click)="loadSummary()">
+        {{ loadingSummary() ? 'Оновлення…' : 'Оновити зведення' }}
+      </button>
+    </div>
+  </form>
+
+  @if (summary(); as s) {
+    <dl class="stats">
+      <div>
+        <dt>Загальний ліміт на день</dt>
+        <dd>{{ s.totalLimit | number: '1.2-2' }}</dd>
+      </div>
+      <div>
+        <dt>Вже видано сьогодні</dt>
+        <dd>{{ s.issuedToday | number: '1.2-2' }}</dd>
+      </div>
+      <div>
+        <dt>Доступно до розподілу</dt>
+        <dd>{{ s.availableBudget | number: '1.2-2' }}</dd>
+      </div>
+    </dl>
+  }
+</div>
+
+<div class="card">
+  <h2>Керування бюджетом і розподілом</h2>
+  <form [formGroup]="form">
+    <label>
+      <span>Новий ліміт бюджету на дату, грн</span>
+      <input type="number" step="0.01" min="0.01" formControlName="budgetCap" placeholder="200000.00" />
+    </label>
+    <div class="actions">
+      <button type="button" class="btn" [disabled]="pendingSave()" (click)="saveBudget()">
+        {{ pendingSave() ? 'Збереження…' : 'Оновити ліміт' }}
+      </button>
+      <button type="button" class="btn ok" [disabled]="pendingRun()" (click)="startRun()">
+        {{ pendingRun() ? 'Запуск…' : 'Запустити розподіл заявок' }}
+      </button>
+    </div>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Налаштування кредитного продукту</h2>
+  <form [formGroup]="productForm">
+    <label>
+      <span>Код продукту</span>
+      <input type="text" formControlName="productCode" />
+    </label>
+    <div class="grid2">
+      <label>
+        <span>Мін. сума</span>
+        <input type="number" step="1" formControlName="minPrincipal" />
+      </label>
+      <label>
+        <span>Макс. сума</span>
+        <input type="number" step="1" formControlName="maxPrincipal" />
+      </label>
+      <label>
+        <span>Мін. днів</span>
+        <input type="number" step="1" formControlName="minTermDays" />
+      </label>
+      <label>
+        <span>Макс. днів</span>
+        <input type="number" step="1" formControlName="maxTermDays" />
+      </label>
+      <label>
+        <span>Ставка за день (десяткова, напр. 0.0015)</span>
+        <input type="number" step="0.000001" formControlName="interestRatePerDay" />
+      </label>
+      <label class="chk">
+        <span>Одразу активувати</span>
+        <input type="checkbox" formControlName="activate" />
+      </label>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn" [disabled]="pendingProductSave()" (click)="saveProduct()">
+        {{ pendingProductSave() ? 'Збереження…' : 'Створити нову версію продукту' }}
+      </button>
+    </div>
+  </form>
+
+  @if (products().length > 0) {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Продукт</th>
+            <th>Версія</th>
+            <th>Активний</th>
+            <th>Сума</th>
+            <th>Дні</th>
+            <th>Ставка/день</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of products(); track p.loanProductId) {
+            <tr>
+              <td>{{ p.productCode }}</td>
+              <td>{{ p.version }}</td>
+              <td>{{ p.isActive ? 'Так' : 'Ні' }}</td>
+              <td>{{ p.minPrincipal | number: '1.0-0' }} - {{ p.maxPrincipal | number: '1.0-0' }}</td>
+              <td>{{ p.minTermDays }} - {{ p.maxTermDays }}</td>
+              <td>{{ p.interestRatePerDay | number: '1.4-6' }}</td>
+              <td>
+                @if (!p.isActive) {
+                  <button
+                    type="button"
+                    class="btn secondary"
+                    [disabled]="pendingActivateId() === p.loanProductId"
+                    (click)="activateProduct(p.loanProductId)"
+                  >
+                    {{ pendingActivateId() === p.loanProductId ? 'Активація…' : 'Зробити активним' }}
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

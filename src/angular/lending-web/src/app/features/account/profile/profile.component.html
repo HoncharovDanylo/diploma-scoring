@@ -1,0 +1,46 @@
+<div class="card">
+  <h1>Дані акаунта</h1>
+  <p class="lede">
+    Перегляд даних акаунта. Поля вказуються при реєстрації та використовуються при скорингу нової заявки.
+  </p>
+
+  @if (loading()) {
+    <p>Завантаження…</p>
+  } @else if (error()) {
+    <p class="banner-err" role="alert">{{ error() }}</p>
+  } @else {
+    @let p = profile();
+    @if (p) {
+    <dl class="grid">
+      <dt>Email</dt>
+      <dd>{{ p.email ?? '—' }}</dd>
+      <dt>Імʼя</dt>
+      <dd>{{ p.displayName ?? '—' }}</dd>
+      <dt>Телефон</dt>
+      <dd>{{ p.phoneNumber ?? '—' }}</dd>
+      <dt>Дата народження</dt>
+      <dd>
+        @if (p.dateOfBirth) {
+          {{ p.dateOfBirth | date: 'dd.MM.yyyy' }}
+        } @else {
+          —
+        }
+      </dd>
+      <dt>Місячний дохід, грн</dt>
+      <dd>
+        @if (p.monthlyIncome != null) {
+          {{ p.monthlyIncome | number: '1.0-0' }}
+        } @else {
+          —
+        }
+      </dd>
+      <dt>Зайнятість</dt>
+      <dd>{{ employmentLabel(p.employmentStatus) }}</dd>
+    </dl>
+    }
+  }
+
+  <p class="foot">
+    <a routerLink="/applications">← До заявок</a>
+  </p>
+</div>

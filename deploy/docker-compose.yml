@@ -1,0 +1,157 @@
+# Lending System — SQL Server, RabbitMQ, Ocelot API gateway, three .NET APIs, Python analytics, Angular (nginx).
+# From repo root: docker compose -f deploy/docker-compose.yml --env-file deploy/env/.env.example up --build
+# UI: http://localhost:4200/ (gateway API: http://localhost:5000/)
+# For production, use secrets instead of example env file.
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SQL_SA_PASSWORD:-Your_password123}
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' -b -o /dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 40s
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 12
+      start_period: 20s
+
+  identity-api:
+    build:
+      context: ../src/dotnet
+      dockerfile: services/Identity.Service/Identity.Api/Dockerfile
+    ports:
+      - "5001:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Identity: Server=sqlserver,1433;Database=LendingIdentity;User Id=sa;Password=${SQL_SA_PASSWORD:-Your_password123};TrustServerCertificate=True;MultipleActiveResultSets=true
+      Jwt__Key: dev-jwt-signing-key-min-32-chars-long!!
+      Jwt__Issuer: Lending
+      Jwt__Audience: Lending
+      InternalApi__ApiKey: dev-identity-internal-key-change-me
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  origination-api:
+    restart: unless-stopped
+    build:
+      context: ../src/dotnet
+      dockerfile: services/Origination.Service/Origination.Api/Dockerfile
+    ports:
+      - "5002:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Origination: Server=sqlserver,1433;Database=LendingOrigination;User Id=sa;Password=${SQL_SA_PASSWORD:-Your_password123};TrustServerCertificate=True;MultipleActiveResultSets=true
+      RabbitMq__HostName: rabbitmq
+      InternalApi__ApiKey: dev-internal-key-change-me
+      Identity__BaseUrl: http://identity-api:8080
+      Identity__InternalApiKey: dev-identity-internal-key-change-me
+      LoanTerms__MaxTermDays: 365
+      Jwt__Key: dev-jwt-signing-key-min-32-chars-long!!
+      Jwt__Issuer: Lending
+      Jwt__Audience: Lending
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      identity-api:
+        condition: service_started
+
+  portfolio-api:
+    restart: unless-stopped
+    build:
+      context: ../src/dotnet
+      dockerfile: services/Portfolio.Service/Portfolio.Api/Dockerfile
+    ports:
+      - "5003:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Portfolio: Server=sqlserver,1433;Database=LendingPortfolio;User Id=sa;Password=${SQL_SA_PASSWORD:-Your_password123};TrustServerCertificate=True;MultipleActiveResultSets=true
+      RabbitMq__HostName: rabbitmq
+      Origination__BaseUrl: http://origination-api:8080
+      Origination__InternalApiKey: dev-internal-key-change-me
+      InternalApi__ApiKey: dev-internal-key-change-me
+      Jwt__Key: dev-jwt-signing-key-min-32-chars-long!!
+      Jwt__Issuer: Lending
+      Jwt__Audience: Lending
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      origination-api:
+        condition: service_started
+
+  api-gateway:
+    build:
+      context: ../src/dotnet
+      dockerfile: gateway/ApiGateway/Dockerfile
+    ports:
+      - "5000:8080"
+    environment:
+      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_ENVIRONMENT: Docker
+    depends_on:
+      identity-api:
+        condition: service_started
+      origination-api:
+        condition: service_started
+      portfolio-api:
+        condition: service_started
+
+  analytics:
+    restart: unless-stopped
+    build:
+      context: ../src/python/analytics_service
+      dockerfile: Dockerfile
+    environment:
+      RABBIT_HOST: rabbitmq
+      RABBIT_USER: guest
+      RABBIT_PASSWORD: guest
+      ORIGINATION_BASE_URL: http://origination-api:8080
+      PORTFOLIO_BASE_URL: http://portfolio-api:8080
+      INTERNAL_API_KEY: dev-internal-key-change-me
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      origination-api:
+        condition: service_started
+      portfolio-api:
+        condition: service_started
+
+  lending-web:
+    build:
+      context: ../src/angular/lending-web
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    depends_on:
+      api-gateway:
+        condition: service_started
+
+volumes:
+  sqlserver_data:
+  rabbitmq_data:

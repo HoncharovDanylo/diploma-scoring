@@ -1,0 +1,82 @@
+.card {
+  max-width: 28rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+}
+
+h1 {
+  font-size: 1.2rem;
+  margin: 0 0 0.5rem;
+}
+
+.intro {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0 0 1.25rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+input {
+  font: inherit;
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 0.35rem;
+  background: var(--input-bg);
+  color: var(--text);
+}
+
+input:focus {
+  outline: 2px solid var(--primary-soft);
+  border-color: var(--primary);
+}
+
+.btn {
+  align-self: flex-start;
+  padding: 0.5rem 1.1rem;
+  border: none;
+  border-radius: 0.4rem;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  font: inherit;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.banner-err {
+  margin: 0;
+  padding: 0.5rem 0.6rem;
+  background: var(--danger-bg);
+  color: var(--danger);
+  border-radius: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.banner-ok {
+  margin: 0;
+  padding: 0.5rem 0.6rem;
+  background: var(--ok-bg);
+  color: var(--ok);
+  border-radius: 0.35rem;
+  font-size: 0.9rem;
+}

@@ -1,0 +1,74 @@
+<div class="card">
+  <h1>Нова кредитна заявка</h1>
+
+  @if (profileError()) {
+    <p class="banner-err" role="alert">{{ profileError() }}</p>
+  } @else {
+    @let p = profile();
+    @if (p) {
+    <section class="profile-strip" aria-label="Дані для скорингу">
+      <h2>Дані для скорингу</h2>
+      <p class="muted">
+        Вік, місячний дохід і зайнятість беруться з вашого акаунта (вказані при реєстрації)
+        і передаються в модель разом із сумою та терміном кредиту.
+      </p>
+      <ul class="kv">
+        <li><span>Дата народження</span> @if (p.dateOfBirth) { {{ p.dateOfBirth | date: 'dd.MM.yyyy' }} } @else { <strong>не вказано</strong> }</li>
+        <li>
+          <span>Місячний дохід</span>
+          @if (p.monthlyIncome != null) {
+            {{ p.monthlyIncome | number: '1.0-0' }} грн
+          } @else { <strong>не вказано</strong> }
+        </li>
+        <li><span>Зайнятість</span> {{ employmentLabel(p.employmentStatus) }}</li>
+      </ul>
+    </section>
+    }
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label>
+      <span>Сума кредиту, грн</span>
+      <input
+        type="range"
+        formControlName="requestedPrincipal"
+        [min]="minPrincipal()"
+        [max]="maxPrincipal()"
+        step="100"
+      />
+      <strong>{{ principalValue() | number: '1.0-0' }} грн</strong>
+      <small class="muted">Діапазон: {{ minPrincipal() | number: '1.0-0' }} - {{ maxPrincipal() | number: '1.0-0' }} грн</small>
+    </label>
+    <label>
+      <span>Термін, днів</span>
+      <input
+        type="range"
+        formControlName="requestedTermDays"
+        [min]="minTermDays()"
+        [max]="maxTermDays()"
+        step="1"
+      />
+      <strong>{{ termDaysValue() }} дн.</strong>
+      <small class="muted">Діапазон: {{ minTermDays() }} - {{ maxTermDays() }} днів</small>
+    </label>
+    <div class="calc-strip">
+      <p><strong>Продукт:</strong> {{ productCode() }} v{{ productVersion() }}</p>
+      <p><strong>Ставка:</strong> {{ interestRatePerDay() | percent: '1.2-2' }} / день</p>
+      <p><strong>Ви берете:</strong> {{ principalValue() | number: '1.0-0' }} грн</p>
+      <p><strong>До повернення:</strong> {{ repaymentAmount() | number: '1.2-2' }} грн</p>
+    </div>
+    <label>
+      <span>Призначення (опційно)</span>
+      <textarea formControlName="purpose" rows="2"></textarea>
+    </label>
+    @if (error()) {
+      <p class="banner-err" role="alert">{{ error() }}</p>
+    }
+    <div class="row">
+      <a routerLink="/applications" class="btn-ghost">Скасувати</a>
+      <button type="submit" class="btn" [disabled]="pending()">
+        {{ pending() ? 'Надсилання…' : 'Подати заявку' }}
+      </button>
+    </div>
+  </form>
+</div>

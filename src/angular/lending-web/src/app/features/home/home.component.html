@@ -1,0 +1,17 @@
+<section class="hero">
+  <h1>Кредитний портал</h1>
+  <p class="lead">
+    Подавайте заявку, стежте за рішенням скорингу та поясненням факторів ризику.
+    Адміністратори керують денним бюджетом і портфелем заявок.
+  </p>
+  @if (auth.isLoggedIn()) {
+    <p>
+      <a class="btn" routerLink="/applications">Перейти до заявок</a>
+    </p>
+  } @else {
+    <p class="actions">
+      <a class="btn" routerLink="/auth/login">Увійти</a>
+      <a class="btn btn-ghost" routerLink="/auth/register">Створити акаунт</a>
+    </p>
+  }
+</section>

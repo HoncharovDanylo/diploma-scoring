@@ -1,0 +1,19 @@
+<div class="card">
+  <h1>Запуск оптимізації портфеля</h1>
+  <p class="intro">
+    Оберіть дату, для якої вже задано денний бюджет, і натисніть «Старт». Результат
+    переглядайте на наступному екрані — оптимізація виконується у фоні.
+  </p>
+  <form [formGroup]="form" (ngSubmit)="startRun()">
+    <label>
+      <span>Бізнес-день</span>
+      <input type="date" formControlName="businessDate" />
+    </label>
+    @if (error()) {
+      <p class="banner-err" role="alert">{{ error() }}</p>
+    }
+    <button type="submit" class="btn" [disabled]="pending()">
+      {{ pending() ? 'Запуск…' : 'Старт оптимізації' }}
+    </button>
+  </form>
+</div>

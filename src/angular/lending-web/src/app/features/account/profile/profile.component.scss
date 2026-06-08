@@ -1,0 +1,29 @@
+.lede {
+  color: var(--muted, #5c5c5c);
+  font-size: 0.95rem;
+  margin-bottom: 1.25rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 12rem 1fr;
+  gap: 0.5rem 1rem;
+  margin: 0;
+}
+
+dt {
+  font-weight: 600;
+  color: var(--muted, #444);
+}
+
+dd {
+  margin: 0;
+}
+
+.foot {
+  margin-top: 1.5rem;
+}
+
+.banner-err {
+  color: #a40000;
+}

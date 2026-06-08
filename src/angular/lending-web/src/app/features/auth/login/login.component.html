@@ -1,0 +1,29 @@
+<div class="card">
+  <h1>Вхід</h1>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label>
+      <span>Email</span>
+      <input type="email" formControlName="email" autocomplete="email" />
+      @if (form.controls.email.touched && form.controls.email.errors?.['required']) {
+        <span class="err">Обовʼязково</span>
+      }
+      @if (form.controls.email.touched && form.controls.email.errors?.['email']) {
+        <span class="err">Некоректний email</span>
+      }
+    </label>
+    <label>
+      <span>Пароль</span>
+      <input type="password" formControlName="password" autocomplete="current-password" />
+      @if (form.controls.password.touched && form.controls.password.errors?.['minlength']) {
+        <span class="err">Мінімум 8 символів</span>
+      }
+    </label>
+    @if (error()) {
+      <p class="banner-err" role="alert">{{ error() }}</p>
+    }
+    <button type="submit" class="btn" [disabled]="pending()">
+      {{ pending() ? 'Вхід…' : 'Увійти' }}
+    </button>
+  </form>
+  <p class="foot"><a routerLink="/auth/register">Немає акаунта? Реєстрація</a></p>
+</div>

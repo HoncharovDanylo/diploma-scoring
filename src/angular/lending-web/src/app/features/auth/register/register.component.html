@@ -1,0 +1,63 @@
+<div class="card">
+  <h1>Реєстрація</h1>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label>
+      <span>Email</span>
+      <input type="email" formControlName="email" autocomplete="email" />
+      @if (form.controls.email.touched && form.controls.email.errors?.['required']) {
+        <span class="err">Обовʼязково</span>
+      }
+    </label>
+    <label>
+      <span>Пароль</span>
+      <input type="password" formControlName="password" autocomplete="new-password" />
+    </label>
+    <label>
+      <span>Імʼя (необовʼязково)</span>
+      <input type="text" formControlName="displayName" autocomplete="name" />
+    </label>
+    <label>
+      <span>Дата народження</span>
+      <input type="date" formControlName="dateOfBirth" autocomplete="bday" />
+      @if (form.controls.dateOfBirth.touched && form.controls.dateOfBirth.errors?.['required']) {
+        <span class="err">Обовʼязково (18+)</span>
+      }
+    </label>
+    <label>
+      <span>Місячний дохід, грн (для зайнятих — обовʼязково вкажіть &gt; 0)</span>
+      <input type="number" formControlName="monthlyIncome" min="0" step="100" />
+    </label>
+    <label>
+      <span>Зайнятість</span>
+      <select formControlName="employmentStatus" autocomplete="organization-title">
+        <option value="" disabled>Оберіть…</option>
+        <option value="Employed">Працівник</option>
+        <option value="SelfEmployed">ФОП / самозайнятий</option>
+        <option value="Unemployed">Безробітний / без зайнятості</option>
+        <option value="Student">Студент</option>
+        <option value="Retired">Пенсіонер</option>
+      </select>
+    </label>
+    <label>
+      <span>Податковий № (замасковано, за бажанням)</span>
+      <input type="text" formControlName="taxIdMasked" maxlength="32" />
+    </label>
+    <label>
+      <span>Телефон (для контакту, опційно)</span>
+      <input
+        type="tel"
+        formControlName="phoneNumber"
+        maxlength="20"
+        autocomplete="tel"
+        inputmode="tel"
+      />
+    </label>
+    @if (error()) {
+      <p class="banner-err" role="alert">{{ error() }}</p>
+    }
+    <button type="submit" class="btn" [disabled]="pending()">
+      {{ pending() ? 'Реєстрація…' : 'Зареєструватися' }}
+    </button>
+  </form>
+  <p class="foot"><a routerLink="/auth/login">Вже є акаунт? Увійти</a></p>
+</div>

@@ -1,0 +1,121 @@
+<p><a routerLink="/applications">← До списку</a></p>
+@if (error()) {
+  <p class="banner-err" role="alert">{{ error() }}</p>
+}
+@if (loading()) {
+  <p>Завантаження…</p>
+} @else if (app()) {
+  @let a = app()!;
+  <div class="card">
+    <h1>Заявка</h1>
+    <dl class="grid">
+      <div>
+        <dt>Номер заявки</dt>
+        <dd class="mono">{{ appId(a.applicationId) }}</dd>
+      </div>
+      <div>
+        <dt>Статус</dt>
+        <dd><span class="status">{{ statusLabel(a.status) }}</span></dd>
+      </div>
+      <div>
+        <dt>Позичальник</dt>
+        <dd>{{ a.applicant.fullName }}</dd>
+      </div>
+      <div>
+        <dt>Запитана сума</dt>
+        <dd>{{ a.requestedPrincipal | number: '1.2-2' }}</dd>
+      </div>
+      @if (a.status === 'ManualApproved' || a.approvedPrincipal != null) {
+        <div>
+          <dt>Схвалена до видачі</dt>
+          <dd>
+            {{ (a.approvedPrincipal ?? a.requestedPrincipal) | number: '1.2-2' }}
+            @if (
+              a.approvedPrincipal != null &&
+              a.approvedPrincipal !== a.requestedPrincipal
+            ) {
+              <span class="muted">
+                (частково; запитано {{ a.requestedPrincipal | number: '1.2-2' }})</span
+              >
+            }
+          </dd>
+        </div>
+      }
+      <div>
+        <dt>Термін</dt>
+        <dd>{{ a.requestedTermDays }} дн.</dd>
+      </div>
+      <div>
+        <dt>Призначення</dt>
+        <dd>{{ a.purpose || '—' }}</dd>
+      </div>
+    </dl>
+    <h2>Скоринг</h2>
+    @if (a.scoring.length === 0) {
+      <p>Немає спроб скорингу.</p>
+    } @else {
+      @for (s of a.scoring; track s.scoringAttemptId; let i = $index) {
+        <section class="attempt">
+          <p>
+            <strong>Спроба скорингу {{ i + 1 }}</strong> ·
+            <span class="sub">{{ attemptStatusLabel(s.status) }}</span>
+          </p>
+          @if (s.result) {
+            <dl class="res">
+              <div>
+                <dt>Ймовірність дефолту</dt>
+                <dd>{{ s.result.probabilityOfDefault | number: '1.2-4' }}</dd>
+              </div>
+              <div>
+                <dt>Рішення моделі</dt>
+                <dd>
+                  <span class="decision" [class.approve]="s.result.finalDecision === 'Approve'" [class.reject]="s.result.finalDecision === 'Reject'">
+                    {{ decisionLabel(s.result.finalDecision) }}
+                  </span>
+                </dd>
+              </div>
+              @if (auth.isAdmin()) {
+              <div>
+                <dt>Версія моделі</dt>
+                <dd>{{ s.result.modelId }} · {{ s.result.modelVersion }}</dd>
+              </div>
+              }
+            </dl>
+            @if (!auth.isAdmin() && s.result.explanation) {
+              <p class="muted">{{ s.result.explanation }}</p>
+            } @else if (auth.isAdmin() && s.result.topFactors && s.result.topFactors.length > 0) {
+              <h3>Головні фактори рішення</h3>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Ознака</th>
+                      <th>Внесок</th>
+                      <th>Напрям</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (f of s.result.topFactors; track $index) {
+                      <tr>
+                        <td>{{ f.featureName }}</td>
+                        <td class="mono">{{ f.contribution }}</td>
+                        <td>{{ shapDirection(f.direction) }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            } @else if (auth.isAdmin()) {
+              <p class="muted">Пояснення ще не збережено (очікуйте завершення скорингу).</p>
+            }
+          } @else {
+            <p class="muted">Результату ще немає.</p>
+          }
+        </section>
+      }
+    }
+  </div>
+  @if (a.status === 'ScoringPending') {
+    <p class="poll-hint">Статус оновлюється автоматично кожні 5 с…</p>
+  }
+}
